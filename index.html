@@ -139,7 +139,7 @@ async function loadEvents(){
     .select("id, event_name,event_type,min_participants,max_participants")
     .eq("category",category.value)
     .eq("is_active",true)
-    .order("name");
+    .order(" event_name");
   if(error){ show(error.message,false); return; }
   events=data||[];
   eventList.innerHTML="";
