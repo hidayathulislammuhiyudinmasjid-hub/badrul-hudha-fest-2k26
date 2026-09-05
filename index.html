@@ -129,12 +129,7 @@ category.addEventListener("change", function () {
   groupCard.classList.add("hidden");
   selectedGroupEvent = null;
 });
-className.appendChild(o);
-});className.disabled=!category.value;
-eventList.innerHTML="";
-eventHelp.textContent="ക്ലാസ് തിരഞ്ഞെടുക്കുക.";
-groupCard.classList.add("hidden"); selectedGroupEvent=null;
-});
+
 className.addEventListener("change", loadEvents);
 
 async function loadEvents(){
