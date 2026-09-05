@@ -131,7 +131,11 @@ category.addEventListener("change", function () {
 });
 category.dispatchEvent(new Event("change"));
 className.addEventListener("change", loadEvents);
-
+window.addEventListener("pageshow", function () {
+  if (category.value) {
+    category.dispatchEvent(new Event("change"));
+  }
+});
 async function loadEvents(){
   eventList.innerHTML="<div class='hint'>മത്സരങ്ങൾ ലോഡ് ചെയ്യുന്നു…</div>";
   groupCard.classList.add("hidden"); selectedGroupEvents=[];
