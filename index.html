@@ -105,12 +105,17 @@ const classMap = {
 };
 
 category.addEventListener("change", () => {
-  alert("Category: " + category.value);
+  
   className.innerHTML = '<option value="">ക്ലാസ് തിരഞ്ഞെടുക്കുക</option>';
-  (classMap[category.value] || []).forEach(c => {
-    const o=document.createElement("option"); o.value=c; o.textContent=c; className.appendChild(o);
-  });
-  className.disabled=!category.value;
+
+const classes = classMap[category.value.trim()] || [];
+
+classes.forEach(c => {
+  const o = document.createElement("option");
+  o.value = c;
+  o.textContent = c;
+  className.appendChild(o);
+});className.disabled=!category.value;
   eventList.innerHTML=""; eventHelp.textContent="ക്ലാസ് തിരഞ്ഞെടുക്കുക.";
   groupCard.classList.add("hidden"); selectedGroupEvent=null;
 });
