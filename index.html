@@ -190,7 +190,7 @@ function renderMembers(){
   if(!selectedGroupEvent){groupCard.classList.add("hidden");return;}
   groupCard.classList.remove("hidden");
   const min=selectedGroupEvent.min_participants, max=selectedGroupEvent.max_participants;
-  groupInfo.textContent=`${selectedGroupEvent.name}: ${min===max ? `കൃത്യമായി ${min}` : `${min} മുതൽ ${max} വരെ`} അംഗങ്ങൾ.`;
+  groupInfo.textContent=`${selectedGroupEvent.event_name}: ${min===max ? `കൃത്യമായി ${min}` : `${min} മുതൽ ${max} വരെ`} അംഗങ്ങൾ.`;
   members.innerHTML="";
   for(let i=1;i<=max;i++){
     const r=document.createElement("div");r.className="member-row";
