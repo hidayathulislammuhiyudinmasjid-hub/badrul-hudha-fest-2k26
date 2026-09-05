@@ -104,16 +104,31 @@ const classMap = {
   "Senior":["Class 6","Class 7","Class 8"]
 };
 
-category.addEventListener("change", () => {
-  
+category.addEventListener("change", function () {
+  const selected = category.value;
+
   className.innerHTML = '<option value="">ക്ലാസ് തിരഞ്ഞെടുക്കുക</option>';
 
-const classes = classMap[category.value.trim()] || [];
+  if (selected === "Kids") {
+    className.innerHTML += '<option value="Class 1">Class 1</option>';
+  } else if (selected === "Sub Junior") {
+    className.innerHTML += '<option value="Class 2">Class 2</option>';
+    className.innerHTML += '<option value="Class 3">Class 3</option>';
+  } else if (selected === "Junior") {
+    className.innerHTML += '<option value="Class 4">Class 4</option>';
+    className.innerHTML += '<option value="Class 5">Class 5</option>';
+  } else if (selected === "Senior") {
+    className.innerHTML += '<option value="Class 6">Class 6</option>';
+    className.innerHTML += '<option value="Class 7">Class 7</option>';
+    className.innerHTML += '<option value="Class 8">Class 8</option>';
+  }
 
-classes.forEach(c => {
-  const o = document.createElement("option");
-  o.value = c;
-  o.textContent = c;
+  className.disabled = false;
+  eventList.innerHTML = "";
+  eventHelp.textContent = "ആദ്യം ക്ലാസ് തിരഞ്ഞെടുക്കുക.";
+  groupCard.classList.add("hidden");
+  selectedGroupEvent = null;
+});
   className.appendChild(o);
 });className.disabled=!category.value;
   eventList.innerHTML=""; eventHelp.textContent="ക്ലാസ് തിരഞ്ഞെടുക്കുക.";
