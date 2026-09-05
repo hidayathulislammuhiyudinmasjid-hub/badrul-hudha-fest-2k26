@@ -127,7 +127,7 @@ category.addEventListener("change", function () {
   eventList.innerHTML = "";
   eventHelp.textContent = "ആദ്യം ക്ലാസ് തിരഞ്ഞെടുക്കുക.";
   groupCard.classList.add("hidden");
-  selectedGroupEvent = [];
+  selectedGroupEvents = [];
 });
 
 className.addEventListener("change", loadEvents);
@@ -178,7 +178,7 @@ function onEventChange(ev){
   if(cb.dataset.type==="group" && groupCount>3){cb.checked=false;show("ഒരു വിദ്യാർത്ഥിക്ക് പരമാവധി 3 ഗ്രൂപ്പ് മത്സരങ്ങൾ മാത്രം.",false);return;}
 
   // Group submission RPC handles one group event at a time.
-  // const selectedGroups=checked.filter(x=>x.dataset.type==="group");
+  const selectedGroups=checked.filter(x=>x.dataset.type==="group");
 
 if(selectedGroups.length>3){
   cb.checked=false;
