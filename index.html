@@ -181,7 +181,7 @@ function onEventChange(ev){
   // Keep the UI to one group event per submission to match the current RPC.
   const selectedGroups=checked.filter(x=>x.dataset.type==="group");
   if(selectedGroups.length>1){
-    cb.checked=false;show("ഒരു രജിസ്ട്രേഷനിൽ ഇപ്പോൾ ഒരു ഗ്രൂപ്പ് മത്സരം മാത്രം സമർപ്പിക്കുക.",false);return;
+    cb.checked=false;show(.പരമാവധി 3 ഗ്രൂപ്പ് മത്സരങ്ങൾ മാത്രമേ തിരഞ്ഞെടുക്കാവൂ",false);return;
   }
   selectedGroupEvent = selectedGroups.length ? events.find(e=>e.id===selectedGroups[0].value) : null;
   renderMembers();
