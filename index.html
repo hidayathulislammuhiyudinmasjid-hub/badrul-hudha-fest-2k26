@@ -246,19 +246,68 @@ async function submit(){
 
   submitBtn.disabled=true;submitBtn.textContent="സമർപ്പിക്കുന്നു…";
   try{
-    if(group){
-      const names=[...members.querySelectorAll(".member-name")].map(x=>x.value.trim()).filter(Boolean);
-      const classes=[...members.querySelectorAll(".member-class")].map(x=>x.value.trim());
-      const min=selectedGroupEvent.min_participants, max=selectedGroupEvent.max_participants;
-      if(names.length!==min || names.length!==max){show(`ഈ മത്സരത്തിന് കൃത്യമായി ${min} അംഗങ്ങൾ വേണം.`,false);return;}
-      const memberData=names.map((name,i)=>({name,class_name:classes[i]||className.value}));
-      const {data,error}=await db.rpc("submit_group_registration",{
-        p_student_name:studentName,p_class_name:className.value,p_category:category.value,
-        p_guardian_name:guardianName,p_phone_number:phone,p_whatsapp_number:whatsapp,
-        p_event_id:group.value,p_members:memberData
-      });
-      if(error) throw error;
-      show("രജിസ്ട്രേഷൻ വിജയകരമായി സമർപ്പിച്ചു. രജിസ്ട്രേഷൻ നമ്പർ: "+data,true);
+  if(group){
+  const groupIds=checked
+    .filter(x=>x.dataset.type==="group")
+    .map(x=>x.value);
+
+  const groups=[];
+
+  for(const eventId of groupIds){
+    const event=events.find(e=>e.id===eventId);
+    const block=members.querySelector(
+      `.group-block[data-event-id="${eventId}"]`
+    );
+
+    if(!event || !block){
+      throw new Error("ഗ്രൂപ്പ് മത്സരത്തിന്റെ വിവരങ്ങൾ ലഭ്യമല്ല.");
+    }
+
+    const names=[...block.querySelectorAll(".member-name")]
+      .map(x=>x.value.trim());
+
+    const classes=[...block.querySelectorAll(".member-class")]
+      .map(x=>x.value.trim());
+
+    const min=event.min_participants;
+    const max=event.max_participants;
+
+    if(names.filter(Boolean).length!==min || names.filter(Boolean).length!==max){
+      throw new Error(
+        `${event.event_name} മത്സരത്തിന് കൃത്യമായി ${min} അംഗങ്ങൾ വേണം.`
+      );
+    }
+
+    const memberData=names.map((name,i)=>({
+      name:name,
+      class_name:classes[i]||className.value
+    }));
+
+    groups.push({
+      event_id:eventId,
+      members:memberData
+    });
+  }
+
+  const {data,error}=await db.rpc(
+    "submit_multi_group_registration",
+    {
+      p_student_name:studentName,
+      p_class_name:className.value,
+      p_category:category.value,
+      p_guardian_name:guardianName,
+      p_phone_number:phone,
+      p_whatsapp_number:whatsapp,
+      p_groups:groups
+    }
+  );
+
+  if(error) throw error;
+
+  show(
+    "രജിസ്ട്രേഷൻ വിജയകരമായി സമർപ്പിച്ചു. രജിസ്ട്രേഷൻ നമ്പർ: "+data,
+    true
+  );
     }else{
       if(individualIds.length>4) throw new Error("പരമാവധി 4 വ്യക്തിഗത മത്സരങ്ങൾ മാത്രം.");
       const {data,error}=await db.rpc("submit_registration",{
