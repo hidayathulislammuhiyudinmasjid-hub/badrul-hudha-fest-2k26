@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Badrul Hudha Madrasa Fest 2K26 – Registration</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans Malayalam",sans-serif;background:#f4f7f6;color:#17312b}
+.container{max-width:760px;margin:auto;padding:18px}
+.header{background:#075e54;color:#fff;border-radius:18px;padding:24px 18px;text-align:center;margin-bottom:16px}
+.header h1{margin:0 0 8px;font-size:25px}.header p{margin:4px 0;font-size:15px}
+.card{background:#fff;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 3px 14px #00000010}
+h2{font-size:19px;margin:0 0 14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+input,select{width:100%;padding:12px;border:1px solid #ccd8d4;border-radius:10px;font-size:15px;background:#fff}
+.event-list{display:grid;gap:9px}.event{border:1px solid #d7e2df;border-radius:11px;padding:11px;display:flex;gap:10px;align-items:flex-start}
+.event input{width:auto;margin-top:3px}.event small{display:block;color:#687a75;margin-top:3px}
+.counter{font-weight:700;color:#075e54;margin-bottom:10px}
+.members{display:grid;gap:9px;margin-top:12px}.member-row{display:grid;grid-template-columns:55px 1fr 110px;gap:8px;align-items:center}
+.member-row span{font-weight:700}.member-row input{min-width:0}
+button{width:100%;border:0;border-radius:11px;padding:14px;background:#075e54;color:#fff;font-size:17px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.55}.msg{padding:13px;border-radius:10px;margin-top:12px;display:none}.ok{background:#e5f7ed;color:#145c39}.err{background:#ffe9e9;color:#8b2020}
+.hidden{display:none}.hint{font-size:13px;color:#667772;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>BADRUL HUDHA MADRASA FEST 2K26</h1>
+    <p>കലാ–സാഹിത്യ മത്സരങ്ങൾ</p>
+    <p>ഓൺലൈൻ രജിസ്ട്രേഷൻ</p>
+  </div>
+
+  <div class="card">
+    <h2>വിഭാഗം & ക്ലാസ്</h2>
+    <div class="grid">
+      <div>
+        <label>വിഭാഗം</label>
+        <select id="category">
+          <option value="">തിരഞ്ഞെടുക്കുക</option>
+          <option>Kids</option><option>Sub Junior</option><option>Junior</option><option>Senior</option>
+        </select>
+      </div>
+      <div>
+        <label>ക്ലാസ്</label>
+        <select id="className" disabled><option value="">ആദ്യം വിഭാഗം തിരഞ്ഞെടുക്കുക</option></select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>വിദ്യാർത്ഥിയുടെ വിവരങ്ങൾ</h2>
+    <div class="grid">
+      <div><label>വിദ്യാർത്ഥിയുടെ പേര്</label><input id="studentName" placeholder="പേര്"></div>
+      <div><label>രക്ഷിതാവിന്റെ പേര്</label><input id="guardianName" placeholder="പേര്"></div>
+      <div><label>ഫോൺ നമ്പർ</label><input id="phone" inputmode="tel" placeholder="10 അക്ക നമ്പർ"></div>
+      <div><label>WhatsApp നമ്പർ</label><input id="whatsapp" inputmode="tel" placeholder="WhatsApp നമ്പർ"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>മത്സരങ്ങൾ</h2>
+    <div id="eventHelp" class="hint">വിഭാഗവും ക്ലാസും തിരഞ്ഞെടുക്കുക.</div>
+    <div id="eventList" class="event-list" style="margin-top:12px"></div>
+  </div>
+
+  <div class="card hidden" id="groupCard">
+    <h2>ഗ്രൂപ്പ് അംഗങ്ങൾ</h2>
+    <div id="groupInfo" class="hint"></div>
+    <div id="members" class="members"></div>
+  </div>
+
+  <div class="card">
+    <button id="submitBtn">രജിസ്ട്രേഷൻ സമർപ്പിക്കുക</button>
+    <div id="message" class="msg"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://ilzweehztqcrnpbdshsp.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+const category = document.getElementById("category");
+const className = document.getElementById("className");
+const eventList = document.getElementById("eventList");
+const eventHelp = document.getElementById("eventHelp");
+const groupCard = document.getElementById("groupCard");
+const groupInfo = document.getElementById("groupInfo");
+const members = document.getElementById("members");
+const submitBtn = document.getElementById("submitBtn");
+const message = document.getElementById("message");
+
+let events = [];
+let selectedGroupEvent = null;
+
+const classMap = {
+  "Kids":["Class 1"],
+  "Sub Junior":["Class 2","Class 3"],
+  "Junior":["Class 4","Class 5"],
+  "Senior":["Class 6","Class 7","Class 8"]
+};
+
+category.addEventListener("change", () => {
+  className.innerHTML = '<option value="">ക്ലാസ് തിരഞ്ഞെടുക്കുക</option>';
+  (classMap[category.value] || []).forEach(c => {
+    const o=document.createElement("option"); o.value=c; o.textContent=c; className.appendChild(o);
+  });
+  className.disabled=!category.value;
+  eventList.innerHTML=""; eventHelp.textContent="ക്ലാസ് തിരഞ്ഞെടുക്കുക.";
+  groupCard.classList.add("hidden"); selectedGroupEvent=null;
+});
+
+className.addEventListener("change", loadEvents);
+
+async function loadEvents(){
+  eventList.innerHTML="<div class='hint'>മത്സരങ്ങൾ ലോഡ് ചെയ്യുന്നു…</div>";
+  groupCard.classList.add("hidden"); selectedGroupEvent=null;
+  const {data,error}=await db.from("fest_events")
+    .select("id,name,event_type,min_participants,max_participants")
+    .eq("category",category.value)
+    .eq("is_active",true)
+    .order("name");
+  if(error){ show(error.message,false); return; }
+  events=data||[];
+  eventList.innerHTML="";
+  if(!events.length){eventHelp.textContent="ഈ വിഭാഗത്തിൽ മത്സരങ്ങൾ ലഭ്യമല്ല.";return;}
+  eventHelp.textContent="Individual: പരമാവധി 4 മത്സരങ്ങൾ. Group: പരമാവധി 3 മത്സരങ്ങൾ.";
+  renderEvents();
+}
+
+function renderEvents(){
+  eventList.innerHTML="";
+  const individuals=events.filter(e=>e.event_type!=="group");
+  const groups=events.filter(e=>e.event_type==="group");
+
+  if(individuals.length){
+    const title=document.createElement("div");title.innerHTML="<b>വ്യക്തിഗത മത്സരങ്ങൾ</b>";eventList.appendChild(title);
+    individuals.forEach(addEvent);
+  }
+  if(groups.length){
+    const title=document.createElement("div");title.style.marginTop="8px";title.innerHTML="<b>ഗ്രൂപ്പ് മത്സരങ്ങൾ</b>";eventList.appendChild(title);
+    groups.forEach(addEvent);
+  }
+}
+function addEvent(e){
+  const row=document.createElement("label");row.className="event";
+  const cb=document.createElement("input");cb.type="checkbox";cb.value=e.id;cb.dataset.type=e.event_type;
+  const text=document.createElement("div");text.innerHTML=`${escapeHtml(e.name)}<small>${e.event_type==="group" ? `അംഗങ്ങൾ: ${e.min_participants}-${e.max_participants}` : "വ്യക്തിഗത"}</small>`;
+  row.append(cb,text);eventList.appendChild(row);
+  cb.addEventListener("change", onEventChange);
+}
+function onEventChange(ev){
+  const cb=ev.target;
+  const checked=[...eventList.querySelectorAll('input[type=checkbox]:checked')];
+  const individualCount=checked.filter(x=>x.dataset.type!=="group").length;
+  const groupCount=checked.filter(x=>x.dataset.type==="group").length;
+  if(cb.dataset.type!=="group" && individualCount>4){cb.checked=false;show("ഒരു വിദ്യാർത്ഥിക്ക് പരമാവധി 4 വ്യക്തിഗത മത്സരങ്ങൾ മാത്രം.",false);return;}
+  if(cb.dataset.type==="group" && groupCount>3){cb.checked=false;show("ഒരു വിദ്യാർത്ഥിക്ക് പരമാവധി 3 ഗ്രൂപ്പ് മത്സരങ്ങൾ മാത്രം.",false);return;}
+
+  // Group submission RPC handles one group event at a time.
+  // Keep the UI to one group event per submission to match the current RPC.
+  const selectedGroups=checked.filter(x=>x.dataset.type==="group");
+  if(selectedGroups.length>1){
+    cb.checked=false;show("ഒരു രജിസ്ട്രേഷനിൽ ഇപ്പോൾ ഒരു ഗ്രൂപ്പ് മത്സരം മാത്രം സമർപ്പിക്കുക.",false);return;
+  }
+  selectedGroupEvent = selectedGroups.length ? events.find(e=>e.id===selectedGroups[0].value) : null;
+  renderMembers();
+}
+function renderMembers(){
+  if(!selectedGroupEvent){groupCard.classList.add("hidden");return;}
+  groupCard.classList.remove("hidden");
+  const min=selectedGroupEvent.min_participants, max=selectedGroupEvent.max_participants;
+  groupInfo.textContent=`${selectedGroupEvent.name}: ${min===max ? `കൃത്യമായി ${min}` : `${min} മുതൽ ${max} വരെ`} അംഗങ്ങൾ.`;
+  members.innerHTML="";
+  for(let i=1;i<=max;i++){
+    const r=document.createElement("div");r.className="member-row";
+    r.innerHTML=`<span>${i}.</span><input class="member-name" data-i="${i}" placeholder="അംഗത്തിന്റെ പേര്"><input class="member-class" data-i="${i}" placeholder="Class">`;
+    members.appendChild(r);
+  }
+}
+submitBtn.addEventListener("click", submit);
+
+async function submit(){
+  hideMessage();
+  const studentName=document.getElementById("studentName").value.trim();
+  const guardianName=document.getElementById("guardianName").value.trim();
+  const phone=document.getElementById("phone").value.trim();
+  const whatsapp=document.getElementById("whatsapp").value.trim();
+  if(!category.value||!className.value||!studentName||!guardianName||!phone||!whatsapp){show("എല്ലാ വിവരങ്ങളും പൂരിപ്പിക്കുക.",false);return;}
+
+  const checked=[...eventList.querySelectorAll('input[type=checkbox]:checked')];
+  const individualIds=checked.filter(x=>x.dataset.type!=="group").map(x=>x.value);
+  const group=checked.find(x=>x.dataset.type==="group");
+  if(!checked.length){show("കുറഞ്ഞത് ഒരു മത്സരം തിരഞ്ഞെടുക്കുക.",false);return;}
+
+  submitBtn.disabled=true;submitBtn.textContent="സമർപ്പിക്കുന്നു…";
+  try{
+    if(group){
+      const names=[...members.querySelectorAll(".member-name")].map(x=>x.value.trim()).filter(Boolean);
+      const classes=[...members.querySelectorAll(".member-class")].map(x=>x.value.trim());
+      const min=selectedGroupEvent.min_participants, max=selectedGroupEvent.max_participants;
+      if(names.length!==min || names.length!==max){show(`ഈ മത്സരത്തിന് കൃത്യമായി ${min} അംഗങ്ങൾ വേണം.`,false);return;}
+      const memberData=names.map((name,i)=>({name,class_name:classes[i]||className.value}));
+      const {data,error}=await db.rpc("submit_group_registration",{
+        p_student_name:studentName,p_class_name:className.value,p_category:category.value,
+        p_guardian_name:guardianName,p_phone_number:phone,p_whatsapp_number:whatsapp,
+        p_event_id:group.value,p_members:memberData
+      });
+      if(error) throw error;
+      show("രജിസ്ട്രേഷൻ വിജയകരമായി സമർപ്പിച്ചു. രജിസ്ട്രേഷൻ നമ്പർ: "+data,true);
+    }else{
+      if(individualIds.length>4) throw new Error("പരമാവധി 4 വ്യക്തിഗത മത്സരങ്ങൾ മാത്രം.");
+      const {data,error}=await db.rpc("submit_registration",{
+        p_student_name:studentName,p_class_name:className.value,p_category:category.value,
+        p_guardian_name:guardianName,p_phone_number:phone,p_whatsapp_number:whatsapp,
+        p_event_ids:individualIds
+      });
+      if(error) throw error;
+      show("രജിസ്ട്രേഷൻ വിജയകരമായി സമർപ്പിച്ചു. രജിസ്ട്രേഷൻ നമ്പർ: "+data,true);
+    }
+  }catch(e){show(e.message||"രജിസ്ട്രേഷൻ പരാജയപ്പെട്ടു.",false)}
+  finally{submitBtn.disabled=false;submitBtn.textContent="രജിസ്ട്രേഷൻ സമർപ്പിക്കുക";}
+}
+function show(t,ok){message.textContent=t;message.className="msg "+(ok?"ok":"err");message.style.display="block";message.scrollIntoView({behavior:"smooth",block:"center"});}
+function hideMessage(){message.style.display="none";}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+</script>
+</body>
+</html>
