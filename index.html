@@ -136,7 +136,7 @@ async function loadEvents(){
   eventList.innerHTML="<div class='hint'>മത്സരങ്ങൾ ലോഡ് ചെയ്യുന്നു…</div>";
   groupCard.classList.add("hidden"); selectedGroupEvent=null;
   const {data,error}=await db.from("fest_events")
-    .select("id,name,event_type,min_participants,max_participants")
+    .select("id, event_name,event_type,min_participants,max_participants")
     .eq("category",category.value)
     .eq("is_active",true)
     .order("name");
