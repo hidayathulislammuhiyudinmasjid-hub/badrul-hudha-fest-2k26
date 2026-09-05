@@ -165,7 +165,7 @@ function renderEvents(){
 function addEvent(e){
   const row=document.createElement("label");row.className="event";
   const cb=document.createElement("input");cb.type="checkbox";cb.value=e.id;cb.dataset.type=e.event_type;
-  const text=document.createElement("div");text.innerHTML=`${escapeHtml(e.name)}<small>${e.event_type==="group" ? `അംഗങ്ങൾ: ${e.min_participants}-${e.max_participants}` : "വ്യക്തിഗത"}</small>`;
+  const text=document.createElement("div");text.innerHTML=`${escapeHtml(e.event_name)}<small>${e.event_type==="group" ? `അംഗങ്ങൾ: ${e.min_participants}-${e.max_participants}` : "വ്യക്തിഗത"}</small>`;
   row.append(cb,text);eventList.appendChild(row);
   cb.addEventListener("change", onEventChange);
 }
