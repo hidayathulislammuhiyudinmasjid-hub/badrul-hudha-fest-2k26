@@ -129,7 +129,7 @@ category.addEventListener("change", function () {
   groupCard.classList.add("hidden");
   selectedGroupEvents = [];
 });
-
+category.dispatchEvent(new Event("change"));
 className.addEventListener("change", loadEvents);
 
 async function loadEvents(){
