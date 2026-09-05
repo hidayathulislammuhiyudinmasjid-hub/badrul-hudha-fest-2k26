@@ -186,9 +186,9 @@ if(selectedGroups.length>3){
   return;
 }
 
-selectedGroupEvent = selectedGroups.length
-  ? events.find(e=>e.id===selectedGroups[selectedGroups.length-1].value)
-  : null;
+selectedGroupEvents = selectedGroups
+  .map(x=>events.find(e=>e.id===x.value))
+  .filter(Boolean);
 
 renderMembers();
 }
