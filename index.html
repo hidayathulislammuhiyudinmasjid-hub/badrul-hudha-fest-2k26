@@ -193,16 +193,41 @@ selectedGroupEvent = selectedGroups.length
 renderMembers();
 }
 function renderMembers(){
-  if(!selectedGroupEvent){groupCard.classList.add("hidden");return;}
-  groupCard.classList.remove("hidden");
-  const min=selectedGroupEvent.min_participants, max=selectedGroupEvent.max_participants;
-  groupInfo.textContent=`${selectedGroupEvent.event_name}: ${min===max ? `കൃത്യമായി ${min}` : `${min} മുതൽ ${max} വരെ`} അംഗങ്ങൾ.`;
-  members.innerHTML="";
-  for(let i=1;i<=max;i++){
-    const r=document.createElement("div");r.className="member-row";
-    r.innerHTML=`<span>${i}.</span><input class="member-name" data-i="${i}" placeholder="അംഗത്തിന്റെ പേര്"><input class="member-class" data-i="${i}" placeholder="Class">`;
-    members.appendChild(r);
+  if(!selectedGroupEvents.length){
+    groupCard.classList.add("hidden");
+    return;
   }
+
+  groupCard.classList.remove("hidden");
+  members.innerHTML="";
+
+  selectedGroupEvents.forEach((event,index)=>{
+    const min=event.min_participants;
+    const max=event.max_participants;
+
+    const block=document.createElement("div");
+    block.className="group-block";
+    block.dataset.eventId=event.id;
+
+    const title=document.createElement("div");
+    title.innerHTML=`<b>${index+1}. ${escapeHtml(event.event_name)}</b>
+      <div class="hint">${min===max ? `കൃത്യമായി ${min}` : `${min} മുതൽ ${max} വരെ`} അംഗങ്ങൾ</div>`;
+
+    block.appendChild(title);
+
+    for(let i=1;i<=max;i++){
+      const r=document.createElement("div");
+      r.className="member-row";
+      r.innerHTML=`
+        <span>${i}.</span>
+        <input class="member-name" data-i="${i}" placeholder="അംഗത്തിന്റെ പേര്">
+        <input class="member-class" data-i="${i}" placeholder="Class">
+      `;
+      block.appendChild(r);
+    }
+
+    members.appendChild(block);
+  });
 }
 submitBtn.addEventListener("click", submit);
 
