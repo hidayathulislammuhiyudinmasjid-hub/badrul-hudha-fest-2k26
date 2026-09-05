@@ -105,6 +105,7 @@ const classMap = {
 };
 
 category.addEventListener("change", () => {
+  alert("Category: " + category.value);
   className.innerHTML = '<option value="">ക്ലാസ് തിരഞ്ഞെടുക്കുക</option>';
   (classMap[category.value] || []).forEach(c => {
     const o=document.createElement("option"); o.value=c; o.textContent=c; className.appendChild(o);
